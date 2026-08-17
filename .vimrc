@@ -64,11 +64,24 @@ filetype plugin indent on   " Enable filetype-specific plugins and indentation
 " -------------------------------------------------------------------
 " Key Mappings
 " -------------------------------------------------------------------
-" Copy selected text cleanly to Windows clipboard (WSL)
-vnoremap <C-C> y:call system('clip.exe', @")<CR>
+" Set space key as a leader key
+let mapleader = " "
 
-" Insert a space in normal mode by space key
-nnoremap <Space> i<Space><Esc>l
+" Copy in clipboard
+if has('macunix')
+  vnoremap <C-c> y:call system('pbcopy', @")<CR>
+elseif exists('$WSL_DISTRO_NAME') || exists('$WSL_INTEROP')
+  vnoremap <C-C> y:call system('clip.exe', @")<CR>
+endif
 
 " Insert a blank line in normal mode by enter key
 nnoremap <CR> o<Esc>
+
+" Write by Leader + w
+nnoremap <Leader>w :write<CR>
+
+" Quit by Leader + q
+nnoremap <Leader>q :quit<CR>
+
+" Escape from insert mode by jk
+inoremap jk <Esc>
