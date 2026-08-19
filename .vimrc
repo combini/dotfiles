@@ -93,6 +93,9 @@ inoremap jk <Esc>
 nnoremap <Leader>s :split<CR>
 nnoremap <Leader>v :vsplit<CR>
 
+" Equalize window size
+nnoremap <Leader>= <C-w>=
+
 " Move between windows by leader + hjkl
 nnoremap <Leader>h <C-w>h
 nnoremap <Leader>j <C-w>j
