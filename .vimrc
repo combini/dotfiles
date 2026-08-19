@@ -88,3 +88,13 @@ nnoremap <Leader>q :quit<CR>
 
 " Escape from insert mode by jk
 inoremap jk <Esc>
+
+" Split windows
+nnoremap <Leader>s :split<CR>
+nnoremap <Leader>v :vsplit<CR>
+
+" Move between windows by leader + hjkl
+nnoremap <Leader>h <C-w>h
+nnoremap <Leader>j <C-w>j
+nnoremap <Leader>k <C-w>k
+nnoremap <Leader>l <C-w>l
