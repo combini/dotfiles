@@ -4,7 +4,7 @@
 set nocompatible            " Disable Vi compatibility (Enable Vim features)
 set encoding=utf-8          " Set internal encoding to UTF-8
 set fileencoding=utf-8      " Set file encoding on save to UTF-8
-set fileencodings=utf-8,cp932,euc-jp,default,latin1 " Auto-detect character encodings
+set fileencodings=ucs-bom,utf-8,cp932,euc-jp,default,latin1 " Auto-detect character encodings
 
 " -------------------------------------------------------------------
 " Display / Appearance
@@ -74,8 +74,11 @@ elseif exists('$WSL_DISTRO_NAME') || exists('$WSL_INTEROP')
   vnoremap <C-C> y:call system('clip.exe', @")<CR>
 endif
 
-" Insert a blank line in normal mode by enter key
-nnoremap <CR> o<Esc>
+" Insert a blank line below in normal mode by leader + o
+nnoremap <Leader>o o<Esc>
+
+" Insert a blank line below in normal mode by leader + o
+nnoremap <Leader>O o<Esc>
 
 " Write by Leader + w
 nnoremap <Leader>w :write<CR>
