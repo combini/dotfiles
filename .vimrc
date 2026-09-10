@@ -67,12 +67,26 @@ filetype plugin indent on   " Enable filetype-specific plugins and indentation
 " Set space key as a leader key
 let mapleader = " "
 
-" Copy in clipboard
-if has('macunix')
-  vnoremap <C-c> y:call system('pbcopy', @")<CR>
-elseif exists('$WSL_DISTRO_NAME') || exists('$WSL_INTEROP')
-  vnoremap <C-C> y:call system('clip.exe', @")<CR>
-endif
+" Copy selected text to system clipboard
+function! CopyToClipboard(text) abort
+  if has('clipboard')
+    call setreg('+', a:text)
+  elseif executable('pbcopy')
+    call system('pbcopy', a:text)
+  elseif executable('clip.exe')
+    call system('clip.exe', a:text)
+  elseif executable('wl-copy')
+    call system('wl-copy', a:text)
+  elseif executable('xclip')
+    call system('xclip -selection clipboard', a:text)
+  elseif executable('xsel')
+    call system('xsel --clipboard --input', a:text)
+  else
+    echo "No clipboard command found"
+  endif
+endfunction
+
+vnoremap <silent> <leader>y y:call CopyToClipboard(@")<CR>
 
 " Insert a blank line below in normal mode by leader + o
 nnoremap <Leader>o o<Esc>
@@ -88,6 +102,9 @@ nnoremap <Leader>q :quit<CR>
 
 " Escape from insert mode by jk
 inoremap jk <Esc>
+
+" Escape from visiual mode by jk
+vnoremap jk <Esc>
 
 " Split windows
 nnoremap <Leader>s :split<CR>
