@@ -67,27 +67,6 @@ filetype plugin indent on   " Enable filetype-specific plugins and indentation
 " Set space key as a leader key
 let mapleader = " "
 
-" Copy selected text to system clipboard
-function! CopyToClipboard(text) abort
-  if has('clipboard')
-    call setreg('+', a:text)
-  elseif executable('pbcopy')
-    call system('pbcopy', a:text)
-  elseif executable('clip.exe')
-    call system('clip.exe', a:text)
-  elseif executable('wl-copy')
-    call system('wl-copy', a:text)
-  elseif executable('xclip')
-    call system('xclip -selection clipboard', a:text)
-  elseif executable('xsel')
-    call system('xsel --clipboard --input', a:text)
-  else
-    echo "No clipboard command found"
-  endif
-endfunction
-
-vnoremap <silent> <leader>y y:call CopyToClipboard(@")<CR>
-
 " Insert a blank line below in normal mode by leader + o
 nnoremap <Leader>o o<Esc>
 
@@ -103,9 +82,6 @@ nnoremap <Leader>q :quit<CR>
 " Escape from insert mode by jk
 inoremap jk <Esc>
 
-" Escape from visiual mode by jk
-vnoremap jk <Esc>
-
 " Split windows
 nnoremap <Leader>s :split<CR>
 nnoremap <Leader>v :vsplit<CR>
@@ -118,3 +94,94 @@ nnoremap <Leader>h <C-w>h
 nnoremap <Leader>j <C-w>j
 nnoremap <Leader>k <C-w>k
 nnoremap <Leader>l <C-w>l
+
+" -------------------------------------------------------------------
+" System Clipboard
+" -------------------------------------------------------------------
+" Copy text to system clipboard
+function! CopyToClipboard(text) abort
+  if has('clipboard')
+    call setreg('+', a:text)
+
+  elseif executable('pbcopy')
+    call system('pbcopy', a:text)
+
+  elseif executable('wl-copy')
+    call system('wl-copy', a:text)
+
+  elseif executable('xclip')
+    call system('xclip -selection clipboard', a:text)
+
+  elseif executable('xsel')
+    call system('xsel --clipboard --input', a:text)
+
+  elseif executable('clip.exe')
+    call system('clip.exe', a:text)
+
+  else
+    echohl WarningMsg
+    echo "No system clipboard available"
+    echohl None
+  endif
+endfunction
+
+
+" Get text from system clipboard
+function! GetClipboard() abort
+  if has('clipboard')
+    return getreg('+')
+
+  elseif executable('pbpaste')
+    return system('pbpaste')
+
+  elseif executable('wl-paste')
+    return system('wl-paste')
+
+  elseif executable('xclip')
+    return system('xclip -selection clipboard -o')
+
+  elseif executable('xsel')
+    return system('xsel --clipboard --output')
+
+  elseif executable('powershell.exe')
+    return substitute(
+          \ system('powershell.exe -NoProfile -Command Get-Clipboard'),
+          \ "\r", "", "g")
+
+  else
+    echohl WarningMsg
+    echo "No system clipboard available"
+    echohl None
+    return ''
+  endif
+endfunction
+
+
+" Paste system clipboard like normal p
+function! PasteFromClipboard() abort
+  let l:text = GetClipboard()
+
+  if empty(l:text)
+    return
+  endif
+
+  " Save temporary register z
+  let l:save_z = getreg('z', 1, 1)
+  let l:save_z_type = getregtype('z')
+
+  " Guess whether clipboard contents are linewise or characterwise
+  let l:type = l:text =~ "\n$" ? 'V' : 'v'
+
+  call setreg('z', l:text, l:type)
+  normal! "zp
+
+  " Restore register z
+  call setreg('z', l:save_z, l:save_z_type)
+endfunction
+
+
+" Visual selection -> system clipboard
+vnoremap <silent> <leader>y y:call CopyToClipboard(@")<CR>
+
+" System clipboard -> Vim
+nnoremap <silent> <leader>p :call PasteFromClipboard()<CR>
