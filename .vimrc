@@ -95,6 +95,10 @@ nnoremap <Leader>j <C-w>j
 nnoremap <Leader>k <C-w>k
 nnoremap <Leader>l <C-w>l
 
+" Do not put words deleted by x (X) into register
+nnoremap x "_x
+nnoremap X "_X
+
 " -------------------------------------------------------------------
 " System Clipboard
 " -------------------------------------------------------------------
